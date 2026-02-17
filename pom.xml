@@ -55,6 +55,19 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- Source: https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-security -->
+		<!-- Spring Security filters are applied from the moment we apply Spring Security dependency ( starter-security dependency ) to our class path. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+<!--			<version>3.0.13</version>-->  <!-- This version tag is not needed. So it was removed. -->
+<!--			<scope>compile</scope>-->  <!-- This tag was not in the video for this dependency. -->
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
