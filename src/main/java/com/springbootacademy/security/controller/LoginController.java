@@ -27,6 +27,7 @@ public class LoginController {
         try {
             String hashPassword = passwordEncoder.encode(user.getPassword()); // hashPassword is a variable. But assigning the password here like this means that the password will be saved as is ( without encryption ). passwordEncoder.encode() encodes or encrypts the password. user.getPassword() returns the password as a String. So this encodes or encrypts the password of the user object and assign it to the hashPassword.
             user.setPassword(hashPassword); // Now user object has the encoded password value.
+            user.setRole("ROLE_"+user.getRole()); // This is to set ROLE_ for the roles in the database.
             User savedUser = userRepo.save(user); // Now we have to save the user object to the database.
             // We usually do not separately create the service package and other necessary packages for this task and code them. Most of the time, we code them here. We do not separately create the service package for the registration and login related things. We code them together. It's really easy. Let's call a repository here and save it. Then, if necessary, we can create a service package and code these things separately without coding them here. Or we can code them here.
             if (savedUser.getId()>0){

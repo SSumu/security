@@ -40,7 +40,7 @@ public class BankUsernamePasswordAuthenticationProvider implements Authenticatio
 //              We need to return a UsernamePasswordAuthenticationToken. Then we need to set the authorities for the UsernamePasswordAuthenticationToken. Authorities are what access paths this user has. What level of user is it? Is it an admin or a user? So, which person is it? We need to mention and send it in this UsernamePasswordAuthenticationToken.
                 List<GrantedAuthority> authorities = new ArrayList<>(); // Create an object called authorities.
                 authorities.add(new SimpleGrantedAuthority(users.get(0).getRole())); // Where do authorities come from? Now I have fetched this user. I fetched it from the database. That user's data is at index 0. If there is a user. getRole() is at index 0 of get(0). Then we set the user's authority or role as admin here. If the role is admin, we can specify which paths can be accessed.
-                return new UsernamePasswordAuthenticationToken(username,pwd,authorities);
+                return new UsernamePasswordAuthenticationToken(username,pwd,authorities); // ADD, DELETE, UPDATE and GET can be given different authorities. ADD authority. DELETE authority. In addition to roles, add authorities can be given to them. People with add can then only get the add function.
             }else {
                 throw new BadCredentialsException("Invalid Password");
             }

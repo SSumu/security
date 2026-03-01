@@ -2,6 +2,8 @@ package com.springbootacademy.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +18,22 @@ import org.springframework.security.web.SecurityFilterChain;
 import javax.sql.DataSource;
 
 @Configuration // When we write a configuration class by putting this annotation, we put it to the container as a bean after it was annotated.
+//@EnableGlobalMethodSecurity(
+//        prePostEnabled = true,
+//        securedEnabled = true
+//) // To enable method level security for our project, we need to put this annotation here. @EnableGlobalMethodSecurity() was deprecated.
+
+// Why it is deprecated
+//  Spring Security redesigned authorization using a newer API called AuthorizationManager.
+//  Because of this:
+//  @EnableGlobalMethodSecurity → deprecated
+//  replaced by → @EnableMethodSecurity
+//This change simplifies configuration and removes older internal components like decision voters and metadata sources.
+
+@EnableMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true
+) // Once set like this, method level security will be applied. @EnableGlobalMethodSecurity is deprecated and replaced with @EnableMethodSecurity().
 public class ProjectSecurityConfig {
 
     @Bean // @Bean creates a bean by defining like this.
@@ -33,9 +51,26 @@ public class ProjectSecurityConfig {
 //                      Consistency with modern Java config
                 .authorizeHttpRequests( auth -> auth
 //                .antMatchers() // This tells us which paths require authenticate. In the video, it shows that this method(antMatchers()) is used to catch those paths. But it was removed from current Spring Boot versions. So current versions use requestMatchers(). These matcher methods were unified into requestMatchers() in Spring Security 6. This auth means that authorizationManagerRequestMatcherRegistry.
-                .requestMatchers("/api/v1/account/my-account","/api/v1/loan/my-loan").authenticated() // Pattern must be written inside "". Pattern of the AccountController is /my-account. authenticated() means that this pattern requires an authentication. We can give as many paths as we want like this, separated by commas(,). The full paths(end-points) must be correctly given. Otherwise, it cannot be identified.
+
+//                .requestMatchers("/api/v1/account/my-account","/api/v1/loan/my-loan").authenticated() // Pattern must be written inside "". Pattern of the AccountController is /my-account. authenticated() means that this pattern requires an authentication. We can give as many paths as we want like this, separated by commas(,). The full paths(end-points) must be correctly given. Otherwise, it cannot be identified. This will run as soon as any authentication is given. authenticated() means any authenticated user. That means it could be admin. It could be user. It could be finance. Anyone with any credentials can access the my-account end-point.
 //                .requestMatchers("/api/v1/account/my-account","/api/v1/loan/my-loan").hasRole("admin")
+//                .requestMatchers("/api/v1/account/my-account").authenticated() // The path to my-account is only accessible if this person is an admin.
+
+//                Both hasAuthority() and hasRole() are used to give authorities to special roles. Both hasAuthority() and hasRole() are used to secure end-points.
+
+//                .requestMatchers("/api/v1/account/my-account").hasAuthority("admin") // The path to my-account is only accessible if this person is an admin.
+//                  .requestMatchers("/api/v1/account/my-account").hasRole("admin") // The path to my-account is only accessible if this person is an admin.
+//                  .requestMatchers("/api/v1/account/my-account").hasRole("ADMIN") // admin must be capitalized after it was capitalized in the database.
+                  .requestMatchers("/api/v1/account/my-account").authenticated() // authenticated() means to grant access to an authenticated user. As it currently stands, this my-account does not have to be an admin account. It can also be accessed by logging in as a user.
+
+//                .requestMatchers("/api/v1/loan/my-loan").authenticated() // The path to my-loan is only accessible if this person is a user.
+//                .requestMatchers("/api/v1/loan/my-loan").hasAuthority("user") // The path to my-loan is only accessible if this person is a user.
+//                .requestMatchers("/api/v1/loan/my-loan").hasRole("user") // The path to my-loan is only accessible if this person is a user.
+//                .requestMatchers("/api/v1/loan/my-loan").hasRole("USER") // user must be capitalized after it was capitalized in the database.
+                .requestMatchers("/api/v1/loan/my-loan").authenticated() // authenticated() means to grant access to an authenticated user. As it currently stands, this my-loan does not have to be a user account. It can also be accessed by logging in as an admin.
+
                 .requestMatchers("/api/v1/notice/my-notice","/api/v1/user/register").permitAll() // We catch another path. permitAll() means that this pattern or path has been given all the permissions. So anyone is permitted to access the my-notice. The full path(end-point) must be correctly given. Otherwise, it cannot be identified.
+
 //                .requestMatchers("/my-notice").denyAll() // denyAll() means that this pattern or path must not be given any permissions as soon as this pattern or path has been accessed.
 //                .and().formLogin() // Both and() and form() are deprecated in the current versions. No parameters → Deprecated since 6.1. This is the old chained DSL style that required .and() so this was deprecated.
 //                It is limited to paths. Now, do not we need to give permitAll() or authenticated() to this register? We need to give permitAll(). But authenticated() is not required. SignUp does not ask for anything (a key or a password). But it does ask when logging in.
